@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propuesta</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --hydro: #00BFFF;
+            --pyro: #FF4500;
+            --gold: #FFD700;
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a1a 100%);
+            font-family: 'Cinzel Decorative', cursive;
+            color: white;
+            overflow-x: hidden;
+            margin: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .title {
+            text-align: center;
+            font-size: clamp(2rem, 6vw, 3rem);
+            margin: 2rem 0;
+            text-shadow: 0 0 20px var(--gold);
+            background: linear-gradient(45deg, var(--hydro), var(--pyro));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem auto;
+        }
+
+        .character-card {
+            position: relative;
+            height: 500px;
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s;
+            background-size: cover;
+            background-position: center;
+            border: 3px solid var(--hydro);
+            box-shadow: 0 0 30px var(--hydro);
+            aspect-ratio: 3/4;
+        }
+
+        .mavuika-card {
+            border: 3px solid var(--pyro);
+            box-shadow: 0 0 30px var(--pyro);
+        }
+
+        .character-card:hover {
+            transform: scale(1.05);
+        }
+
+        .character-overlay {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            text-align: center;
+        }
+
+        .element-icon {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            margin-bottom: 1rem;
+            color: var(--hydro);
+        }
+
+        .mavuika-card .element-icon {
+            color: var(--pyro);
+        }
+
+        /* Estilos de la Carta - Responsivos */
+        .letter-toggle {
+            display: block;
+            width: clamp(50px, 8vw, 60px);
+            height: clamp(50px, 8vw, 60px);
+            margin: 2rem auto;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--gold), #daa520);
+            border: 2px solid var(--gold);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .letter-toggle i {
+            color: white;
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s;
+        }
+
+        .letter-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.5s ease-in-out;
+            opacity: 0;
+            max-width: min(90%, 800px);
+            margin: 0 auto;
+            position: relative;
+            padding: 0 1rem;
+        }
+
+        .letter-container.open {
+            max-height: 2000px;
+            opacity: 1;
+            margin: 3rem auto;
+        }
+
+        .letter-content {
+            position: relative;
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.7);
+            padding: clamp(1rem, 3vw, 2rem);
+            border-radius: 10px;
+            border: 3px solid var(--gold);
+            box-shadow: 0 0 30px rgba(0, 191, 255, 0.3);
+            transform: rotate(-1deg);
+            animation: floatLetter 6s ease-in-out infinite;
+            margin: 1rem;
+        }
+
+        .letter-title {
+            font-family: 'Cinzel Decorative', cursive;
+            color: var(--gold);
+            text-align: center;
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            margin-bottom: clamp(1rem, 3vw, 2rem);
+            text-shadow: 0 0 10px var(--hydro);
+            line-height: 1.2;
+        }
+
+        .letter-text {
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            line-height: 1.6;
+            color: #e0e0e0;
+            hyphens: auto;
+            text-align: justify;
+        }
+
+        .letter-list {
+            margin: clamp(1rem, 3vw, 1.5rem) 0;
+            padding-left: clamp(1.5rem, 4vw, 2rem);
+            list-style-type: none;
+        }
+
+        .letter-list li {
+            margin: clamp(0.8rem, 2vw, 1rem) 0;
+            padding-left: clamp(1.8rem, 4vw, 2rem);
+            position: relative;
+            font-size: clamp(0.85rem, 2.8vw, 1rem);
+        }
+
+        .letter-list li:before {
+            content: '✦';
+            position: absolute;
+            left: 0.2rem;
+            color: var(--hydro);
+            font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+        }
+
+        .letter-signature {
+            text-align: right;
+            margin-top: clamp(1rem, 3vw, 2rem);
+            font-style: italic;
+        }
+
+        .signature-name {
+            font-family: 'Cinzel Decorative', cursive;
+            color: var(--gold);
+            font-size: clamp(1.2rem, 4vw, 1.4rem);
+            display: block;
+            margin-top: 0.5rem;
+        }
+
+        .letter-seal {
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: clamp(70px, 10vw, 100px);
+            height: clamp(70px, 10vw, 100px);
+            background: url('https://i.imgur.com/3QZm7fC.png') center/contain no-repeat;
+            filter: drop-shadow(0 0 10px var(--hydro));
+            transform: rotate(15deg);
+        }
+
+        /* Sistema de Historias */
+        .story-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .story-content {
+            max-width: min(90%, 800px);
+            padding: clamp(1rem, 3vw, 2rem);
+            background: rgba(0,0,0,0.8);
+            border-radius: 15px;
+            border: 2px solid var(--gold);
+            position: relative;
+            margin: 1rem;
+        }
+
+        .story-text {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            line-height: 1.5;
+            margin-bottom: clamp(1rem, 3vw, 2rem);
+            min-height: 150px;
+        }
+
+        .story-choices {
+            display: flex;
+            gap: clamp(0.5rem, 2vw, 1rem);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .story-button {
+            padding: clamp(0.6rem, 2vw, 0.8rem) clamp(1rem, 4vw, 2rem);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            transition: all 0.3s;
+        }
+
+        /* Animaciones */
+        @keyframes titleGlow {
+            0% { text-shadow: 0 0 20px var(--gold); }
+            50% { text-shadow: 0 0 40px var(--pyro); }
+            100% { text-shadow: 0 0 20px var(--gold); }
+        }
+
+        @keyframes floatLetter {
+            0% { transform: rotate(-1deg) translateY(0); }
+            50% { transform: rotate(1deg) translateY(-10px); }
+            100% { transform: rotate(-1deg) translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .character-card {
+                height: 400px;
+            }
+            
+            .letter-seal {
+                display: none;
+            }
+            
+            .letter-content {
+                transform: rotate(0);
+                margin: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .character-card {
+                height: 300px;
+            }
+            
+            .letter-text {
+                text-align: left;
+            }
+            
+            .story-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Misión del Corazón</h1>
+        
+        <div class="characters-grid">
+            <!-- Furina -->
+            <div class="character-card" style="background-image: url('https://citrusman.neocities.org/furina.png');" onclick="startStory('furina')">
+                <div class="character-overlay">
+                    <i class="fas fa-tint element-icon"></i>
+                    <h2>Furina</h2>
+                    <p>La Diva del Hydro</p>
+                </div>
+            </div>
+
+            <!-- Maulani -->
+            <div class="character-card" style="background-image: url('https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/5e5896a5-4a79-496a-bea4-81f26cfa2650/di3m213-8c64fe2f-3181-4c7f-a951-37733e3ec298.png/v1/fill/w_1142,h_700/mualani_genshin_impact_art_render_by_deg5270_di3m213-pre.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9Nzg1IiwicGF0aCI6IlwvZlwvNWU1ODk2YTUtNGE3OS00OTZhLWJlYTQtODFmMjZjZmEyNjUwXC9kaTNtMjEzLThjNjRmZTJmLTMxODEtNGM3Zi1hOTUxLTM3NzMzZTNlYzI5OC5wbmciLCJ3aWR0aCI6Ijw9MTI4MCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.8BS7plg7jItHiSIbBCm0gYkVIE-ae5hSHMhqlL80jeQ');" onclick="startStory('maulani')">
+                <div class="character-overlay">
+                    <i class="fas fa-tint element-icon"></i>
+                    <h2>Maulani</h2>
+                    <p>La Ninfa del Hydro</p>
+                </div>
+            </div>
+
+            <!-- Mavuika -->
+            <div class="character-card mavuika-card" style="background-image: url('https://theriagames.com/wp-content/uploads/2025/03/genshin-impact-mavuika-1024x1024.webp');" onclick="startStory('mavuika')">
+                <div class="character-overlay">
+                    <i class="fas fa-fire element-icon"></i>
+                    <h2>Mavuika</h2>
+                    <p>La Guerrera del Pyro</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botón para la carta -->
+        <button class="letter-toggle" onclick="toggleLetter()">
+            <i class="fas fa-chevron-down"></i>
+        </button>
+
+        <!-- Sección de Carta -->
+        <div class="letter-container" id="letterContainer">
+            <div class="letter-content">
+                <div class="letter-seal"></div>
+                <h3 class="letter-title">Carta para Sofi</h3>
+                <div class="letter-text">
+                    <p>Mi amada y querida Sofi,</p>
+                    
+                    <p>En este vasto mundo lleno de aventuras y misterios, el destino me ha bendecido con el más preciado de los tesoros: tú. Eres la melodía que armoniza mi existencia, la chispa que enciende mi alma y la razón por la que cada día deseo ser mejor.</p>
+                    
+                    <p>Como Furina, la antigua Arconte Hydro de Fontaine, cuya teatralidad ocultaba una profunda sensibilidad, he aprendido que detrás de cada gesto hay emociones sinceras. Así, cada palabra que te dedico está impregnada de la más pura verdad: te amo con todo mi ser.</p>
+                    
+                    <p>Tu alegría y entusiasmo me recuerdan a Mualani, la joven surfista de Natlan, cuya energía y calidez iluminan a quienes la rodean. Contigo, cada momento se convierte en una celebración de la vida, y tu risa es la melodía que deseo escuchar por siempre.</p>
+                    
+                    <p>Y como Mavuika, la Arconte Pyro de Natlan, cuya fuerza y determinación inspiran a su pueblo, tú me das el valor para enfrentar cualquier desafío. A tu lado, siento que puedo conquistar cualquier obstáculo, porque tu amor me fortalece y me guía.</p>
+
+                    <p>Eres el regalo más preciado que la vida me ha otorgado, y cada día a tu lado es una nueva aventura que deseo vivir plenamente. Prometo ser tu compañero fiel, tu apoyo incondicional y el guardián de tu felicidad.</p>
+                    
+                    <p class="letter-signature">Con todo mi amor y devoción,<br>
+                    <span class="signature-name">Jorgito</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sistema de Historias -->
+        <div class="story-container" id="storyContainer">
+            <div class="story-content" id="storyContent">
+                <div class="story-text" id="storyText"></div>
+                <div class="story-choices" id="storyChoices"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Función para toggle de la carta
+        function toggleLetter() {
+            const container = document.getElementById('letterContainer');
+            const toggleBtn = document.querySelector('.letter-toggle i');
+            
+            container.classList.toggle('open');
+            
+            if(container.classList.contains('open')) {
+                toggleBtn.classList.remove('fa-chevron-down');
+                toggleBtn.classList.add('fa-chevron-up');
+            } else {
+                toggleBtn.classList.remove('fa-chevron-up');
+                toggleBtn.classList.add('fa-chevron-down');
+            }
+        }
+
+        // Sistema de Historias
+        const stories = {
+            furina: {
+                steps: [
+                    {
+                        text: "¡Oh, mi estimada aventurera! El escenario está listo y el público expectante...",
+                        background: "linear-gradient(45deg, #000033, var(--hydro))"
+                    },
+                    {
+                        text: "¿Qué dices? ¿Te atreverías a ser mi coprotagonista en esta obra llamada vida?",
+                        background: "linear-gradient(45deg, var(--hydro), #000066)"
+                    },
+                    {
+                        text: "Juntos podríamos crear un acto final que conmueva hasta a los dioses...",
+                        background: "linear-gradient(45deg, #000066, var(--hydro))",
+                        final: true,
+                        question: "¿Aceptas ser mi eterna compañera de escenario?"
+                    }
+                ]
+            },
+            maulani: {
+                steps: [
+                    {
+                        text: "Las olas susurran secretos marinos... ¿Escuchas su canción?",
+                        background: "linear-gradient(45deg, #000033, var(--hydro))"
+                    },
+                    {
+                        text: "Un pacto acuático se manifiesta entre nosotros...",
+                        background: "linear-gradient(45deg, var(--hydro), #000066)"
+                    },
+                    {
+                        text: "¿Permitirías que nuestras corrientes se fundan en un mismo océano?",
+                        background: "linear-gradient(45deg, #000066, var(--hydro))",
+                        final: true,
+                        question: "¿Navegarás conmigo en este mar de emociones?"
+                    }
+                ]
+            },
+            mavuika: {
+                steps: [
+                    {
+                        text: "¡Las llamas rugen y el combate llama! ¿Estás lista para el desafío?",
+                        background: "linear-gradient(45deg, #330000, var(--pyro))"
+                    },
+                    {
+                        text: "Ningún enemigo podrá detenernos si luchamos juntos...",
+                        background: "linear-gradient(45deg, var(--pyro), #660000)"
+                    },
+                    {
+                        text: "¿Aceptarías ser mi compañera de batalla... y de vida?",
+                        background: "linear-gradient(45deg, #660000, var(--pyro))",
+                        final: true,
+                        question: "¿Uniremos nuestras llamas en un solo corazón?"
+                    }
+                ]
+            }
+        };
+
+        let currentStory = null;
+        let currentStep = 0;
+
+        function startStory(character) {
+            currentStory = character;
+            currentStep = 0;
+            document.body.style.background = stories[character].steps[0].background;
+            document.getElementById('storyContainer').style.display = 'flex';
+            showStoryStep();
+        }
+
+        function showStoryStep() {
+            const step = stories[currentStory].steps[currentStep];
+            const storyText = document.getElementById('storyText');
+            const storyChoices = document.getElementById('storyChoices');
+            
+            storyText.innerHTML = step.text;
+            storyChoices.innerHTML = '';
+
+            if(step.final) {
+                const acceptButton = document.createElement('button');
+                acceptButton.className = 'story-button';
+                acceptButton.style.background = `linear-gradient(45deg, ${getColor()}, #222)`;
+                acceptButton.innerHTML = '¡Aceptar!';
+                acceptButton.onclick = () => showFinalProposal();
+
+                const declineButton = document.createElement('button');
+                declineButton.className = 'story-button';
+                declineButton.style.background = '#222';
+                declineButton.innerHTML = 'Pensarlo más';
+                declineButton.onclick = () => closeStory();
+
+                storyChoices.append(acceptButton, declineButton);
+            } else {
+                const nextButton = document.createElement('button');
+                nextButton.className = 'story-button';
+                nextButton.style.background = `linear-gradient(45deg, ${getColor()}, #222)`;
+                nextButton.innerHTML = 'Continuar';
+                nextButton.onclick = nextStep;
+                storyChoices.appendChild(nextButton);
+            }
+        }
+
+        function getColor() {
+            return currentStory === 'mavuika' ? 'var(--pyro)' : 'var(--hydro)';
+        }
+
+        function nextStep() {
+            currentStep++;
+            document.body.style.background = stories[currentStory].steps[currentStep].background;
+            showStoryStep();
+        }
+
+        function showFinalProposal() {
+            const question = stories[currentStory].steps[currentStep].question;
+            const storyText = document.getElementById('storyText');
+            
+            storyText.innerHTML = `
+                <div style="text-align: center; animation: pulse 1s infinite">
+                    <h3 style="color: ${getColor()}">${question}</h3>
+                    <div style="font-size: 3rem">💖</div>
+                </div>
+            `;
+            
+            const storyChoices = document.getElementById('storyChoices');
+            storyChoices.innerHTML = `
+                <button class="story-button" style="background: ${getColor()}" onclick="celebrate()">¡Sí, acepto!</button>
+                <button class="story-button" style="background: #666" onclick="closeStory()">Todavía no</button>
+            `;
+        }
+
+        function celebrate() {
+            document.body.innerHTML = `
+                <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                    <h1 style="font-size: 4rem; text-shadow: 0 0 20px ${getColor()}">¡Misión Cumplida!</h1>
+                    <p style="font-size: 2rem;">Nueva aventura desbloqueada: Eternidad contigo</p>
+                    <div style="font-size: 5rem; margin-top: 2rem;">🎉💘🎊</div>
+                </div>
+            `;
+            document.body.style.background = `radial-gradient(circle, ${getColor()}, #000)`;
+        }
+
+        function closeStory() {
+            document.getElementById('storyContainer').style.display = 'none';
+            document.body.style.background = 'radial-gradient(circle at center, #1a1a2e 0%, #0a0a1a 100%)';
+        }
+    </script>
+</body>
+</html>
